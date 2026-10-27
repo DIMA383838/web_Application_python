@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Быстрый отчёт — Статистика вычислений{% endblock %}
+{% block content %}
+<a class="back" href="{{ url_for('index') }}">← Обзор</a>
+<section class="page-intro"><div class="eyebrow">АВТОМАТИЗАЦИЯ</div><h1>Отчёт за прошлый месяц</h1><p>Выберите источник и исходный файл. Веб-приложение последовательно запустит существующие скрипты и соберёт итоговый отчёт за выбранный период.</p></section>
+<div class="month-banner"><div><span class="month-caption">ПЕРИОД ОТЧЁТА</span><strong>{{ month_start }} — {{ month_end }}</strong></div><span class="month-chip">{{ month_label }}</span></div>
+{% if not has_groups %}<div class="flash error"><span class="flash-dot"></span>Не найден файл групп. Загрузите <strong>group_file_origin.xlsx</strong> в раздел «Файлы отчёта».</div>{% endif %}
+<div class="workflow-grid">
+  <form method="post" class="workflow-card" onsubmit="return confirm('Запустить обработку статистики ВЦКП за {{ month_label }}?');">
+    <input type="hidden" name="source" value="vckp">
+    <div class="workflow-icon icon-vckp">В</div><div class="workflow-kicker">ЦЕПОЧКА ИЗ 3 ШАГОВ</div><h2>ВЦКП</h2><p>DOCX → Excel → объединение → отчёт по группам и датам.</p>
+    <label for="vckp-file">Исходный DOCX</label><select id="vckp-file" name="source_file" required {% if not word_files or not has_groups %}disabled{% endif %}>{% for f in word_files %}<option value="{{ f.name }}">{{ f.name }}</option>{% else %}<option value="">Нет DOCX в папке data/word</option>{% endfor %}</select>
+    <div class="hint">Для каждого запуска выберите один исходный DOCX. Временная рабочая папка изолирует результат от старых файлов.</div>
+    <button class="button button-primary" type="submit" {% if not word_files or not has_groups %}disabled{% endif %}>Сформировать отчёт ВЦКП <span>→</span></button>
+  </form>
+  <form method="post" class="workflow-card" onsubmit="return confirm('Запустить обработку статистики ЦСМ за {{ month_label }}?');">
+    <input type="hidden" name="source" value="csm">
+    <div class="workflow-icon icon-csm">Ц</div><div class="workflow-kicker">ЦЕПОЧКА ИЗ 2 ШАГОВ</div><h2>ЦСМ</h2><p>TXT-лог → Excel → отчёт по группам и датам.</p>
+    <label for="csm-file">Исходный TXT</label><select id="csm-file" name="source_file" required {% if not csm_files or not has_groups %}disabled{% endif %}>{% for f in csm_files %}<option value="{{ f.name }}">{{ f.name }}</option>{% else %}<option value="">Нет TXT в папке data/csm</option>{% endfor %}</select>
+    <div class="hint">Скрипт преобразования ЦСМ и скрипт отчёта запускаются без изменения их логики.</div>
+    <button class="button button-primary" type="submit" {% if not csm_files or not has_groups %}disabled{% endif %}>Сформировать отчёт ЦСМ <span>→</span></button>
+  </form>
+</div>
+<div class="notice"><span class="notice-mark">i</span><p><strong>Важно.</strong> Автоматизация фильтрует результат по датам прошлого календарного месяца. Она не может определить период исходного DOCX по названию — перед запуском убедитесь, что выбранный файл содержит нужную статистику.</p></div>
+{% endblock %}

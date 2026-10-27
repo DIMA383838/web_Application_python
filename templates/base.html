@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#172a3a">
+  <title>{% block title %}Статистика вычислений{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <div class="container nav">
+    <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">Σ</span><span>Статистика<span class="brand-light"> вычислений</span></span></a>
+    <nav aria-label="Основная навигация">
+      <a href="{{ url_for('index') }}">Обзор</a>
+      <a href="{{ url_for('monthly_report') }}">Быстрый отчёт</a>
+      <a href="{{ url_for('files_page', folder_key='report') }}">Файлы</a>
+      <a href="{{ url_for('groups_editor') }}">Группы</a>
+    </nav>
+  </div>
+</header>
+<main class="container main-content">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}<div class="flash {{ category }}"><span class="flash-dot"></span>{{ message }}</div>{% endfor %}
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="container footer"><span>Локальный инструмент обработки статистики</span><span>Файлы остаются на вашем компьютере</span></footer>
+</body>
+</html>

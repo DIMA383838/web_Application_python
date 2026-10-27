@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Группы{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Группы сотрудников</h1><p>Редактирование group_file_origin.xlsx. Структура колонок сохраняется.</p></div>
+<form method="post" class="panel" id="groups-form"><input type="hidden" name="data" id="data"><div class="table-wrap"><table id="groups-table"><thead><tr><th>Наименование группы</th><th>Участники</th><th>Ресурс</th><th>Коментарий</th><th></th></tr></thead><tbody></tbody></table></div><div class="actions"><button type="button" class="button secondary" onclick="addRow()">+ Строка</button><button class="button" type="submit">Сохранить</button></div></form>
+<script>
+const rows={{ rows|tojson }}; const cols=['Наименование группы','Участники','Ресурс','Коментарий']; const tbody=document.querySelector('#groups-table tbody');
+function addRow(data={}){const tr=document.createElement('tr'); cols.forEach(c=>{const td=document.createElement('td');const input=document.createElement('input');input.value=data[c]||'';input.dataset.col=c;td.appendChild(input);tr.appendChild(td)});const td=document.createElement('td');td.innerHTML='<button type="button" class="link-danger">Удалить</button>';td.firstChild.onclick=()=>tr.remove();tr.appendChild(td);tbody.appendChild(tr)}
+rows.forEach(addRow); if(!rows.length) addRow();
+document.querySelector('#groups-form').addEventListener('submit',()=>{const out=[];tbody.querySelectorAll('tr').forEach(tr=>{const o={};tr.querySelectorAll('input').forEach(i=>o[i.dataset.col]=i.value);out.push(o)});document.querySelector('#data').value=JSON.stringify(out)})
+</script>
+{% endblock %}

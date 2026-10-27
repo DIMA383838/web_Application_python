@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Обзор — Статистика вычислений{% endblock %}
+{% block content %}
+<section class="hero hero-home">
+  <div class="hero-copy">
+    <div class="eyebrow"><span class="eyebrow-line"></span> РАБОЧЕЕ ПРОСТРАНСТВО</div>
+    <h1>Статистика <br><span>вычислительных ресурсов</span></h1>
+    <p>Запускайте обработку, проверяйте доступный период данных и собирайте отчёты в одном месте.</p>
+    <a class="button button-primary" href="{{ url_for('monthly_report') }}">Сформировать отчёт за прошлый месяц <span aria-hidden="true">↗</span></a>
+  </div>
+  <div class="hero-art" aria-hidden="true"><div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div><div class="art-core">Σ</div><div class="art-tag tag-top">DATA / FLOW</div><div class="art-tag tag-bottom">REPORT READY</div></div>
+</section>
+<section class="section-block">
+  <div class="section-heading"><div><div class="eyebrow">ОХВАТ ДАННЫХ</div><h2>За какой период есть статистика</h2></div><span class="section-note">По файлам в папках статистики</span></div>
+  <div class="period-grid">
+    <article class="period-card period-vckp"><div class="period-top"><span class="source-icon">В</span><span class="status-pill"><span></span> ВЦКП</span></div><div class="period-label">Доступный период</div><div class="period-value">{{ periods.vckp.label }}</div><div class="period-foot"><span>{{ periods.vckp.files_count }} Excel-файлов</span><a href="{{ url_for('files_page', folder_key='connection') }}">Открыть данные ↗</a></div></article>
+    <article class="period-card period-csm"><div class="period-top"><span class="source-icon">Ц</span><span class="status-pill"><span></span> ЦСМ</span></div><div class="period-label">Доступный период</div><div class="period-value">{{ periods.csm.label }}</div><div class="period-foot"><span>{{ periods.csm.files_count }} Excel-файлов</span><a href="{{ url_for('files_page', folder_key='csm') }}">Открыть данные ↗</a></div></article>
+  </div>
+  <p class="micro-note">Период рассчитывается по датам в первом листе Excel-файлов. Если файлы только что загружены и ещё не обработаны, сначала запустите соответствующую операцию.</p>
+</section>
+<section class="section-block">
+  <div class="section-heading"><div><div class="eyebrow">ИНСТРУМЕНТЫ</div><h2>Операции</h2></div><span class="section-note">Выберите нужный процесс</span></div>
+  <div class="cards">
+  {% for key, info in scripts.items() %}
+    <a class="card" href="{{ url_for('script_page', key=key) }}"><div class="card-top"><span class="card-number">0{{ loop.index }}</span><span class="card-arrow">↗</span></div><h3>{{ info.title }}</h3><p>{{ info.description }}</p><span class="card-link">Открыть операцию <span>→</span></span></a>
+  {% endfor %}
+  </div>
+</section>
+<section class="quick-strip"><div><div class="eyebrow">БЫСТРЫЙ ДОСТУП</div><h2>Файлы и справочники</h2><p>Загрузите исходные данные или обновите таблицу групп.</p></div><div class="quick-links"><a href="{{ url_for('files_page', folder_key='word') }}">DOCX · ВЦКП <span>↗</span></a><a href="{{ url_for('files_page', folder_key='connection') }}">Excel · ВЦКП <span>↗</span></a><a href="{{ url_for('files_page', folder_key='csm') }}">TXT / Excel · ЦСМ <span>↗</span></a><a href="{{ url_for('groups_editor') }}">Группы сотрудников <span>↗</span></a></div></section>
+{% endblock %}

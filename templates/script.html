@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ info.title }}{% endblock %}
+{% block content %}
+<a class="back" href="{{ url_for('index') }}">← Все операции</a>
+<div class="page-head"><h1>{{ info.title }}</h1><p>{{ info.description }}</p></div>
+
+<form method="post" class="panel form">
+{% if key == 'word_excel' %}
+  <div class="hint">Загрузите .docx ниже. При запуске будут обработаны все .docx в этой папке.</div>
+{% elif key == 'connection' %}
+  <div class="hint">Загрузите исходные .xlsx. Скрипт объединяет все Excel-файлы, находящиеся в этой папке.</div>
+{% elif key == 'csm' %}
+  <label>Входной .txt файл</label>
+  <select name="input_file" required>{% for f in selectable if f.name.endswith('.txt') %}<option value="{{ f.name }}">{{ f.name }}</option>{% else %}<option value="">Нет .txt файлов</option>{% endfor %}</select>
+  <label>Имя выходного файла без .xlsx <span class="muted">необязательно</span></label>
+  <input name="output_name" placeholder="Оставьте пустым для автоматического имени">
+{% elif key == 'delete_prints' %}
+  <label>Excel-файл</label>
+  <select name="input_file" required>{% for f in selectable if f.name.endswith('.xlsx') %}<option value="{{ f.name }}">{{ f.name }}</option>{% else %}<option value="">Нет .xlsx файлов</option>{% endfor %}</select>
+  <div class="hint">Файл изменяется самим исходным скриптом. Сначала сделайте копию, если она нужна.</div>
+{% elif key == 'report_by_date' %}
+  <label>Файл групп</label>
+  <select name="groups_file" required>{% for f in selectable if f.name.endswith('.xlsx') %}<option value="{{ f.name }}" {% if f.name == 'group_file_origin.xlsx' %}selected{% endif %}>{{ f.name }}</option>{% else %}<option value="">Нет .xlsx файлов</option>{% endfor %}</select>
+  <label>Файл статистики</label>
+  <select name="results_file" required>{% for f in selectable if f.name.endswith('.xlsx') %}<option value="{{ f.name }}">{{ f.name }}</option>{% else %}<option value="">Нет .xlsx файлов</option>{% endfor %}</select>
+  <label>Серийный режим</label>
+  <select name="serial_mode"><option value="нет">Нет</option><option value="да">Да</option></select>
+  <div class="grid2">
+    <div><label>Дата начала</label><input type="date" name="period_start" required></div>
+    <div><label>Дата окончания</label><input type="date" name="period_end" required></div>
+  </div>
+  <label>Имя выходного файла без .xlsx</label>
+  <input name="output_name" required placeholder="например, отчет_октябрь_2026">
+{% endif %}
+  <button class="button" type="submit">Запустить</button>
+</form>
+
+<div class="panel files-panel">
+  <div class="panel-head"><h2>Файлы операции</h2><a class="button secondary" href="{{ url_for('files_page', folder_key=info.folder_key) }}">Управление файлами</a></div>
+  {% if files %}<div class="file-list">{% for f in files %}<div class="file-row"><span>{{ f.name }}</span><span class="muted">{{ format_size(f.size) }} · {{ f.mtime }}</span></div>{% endfor %}</div>{% else %}<p class="muted">Папка пока пустая.</p>{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Запуск — {{ run.title }}{% endblock %}
+{% block content %}
+<a class="back" href="{{ url_for('monthly_report') if run.key == 'monthly' else url_for('script_page', key=run.key) }}">← {{ 'К быстрому отчёту' if run.key == 'monthly' else 'Назад к операции' }}</a>
+<div class="page-head"><h1>{{ run.title }}</h1><p id="status">Запуск...</p></div>
+<div class="panel"><pre id="log">Загрузка лога…</pre></div>
+<div class="panel" id="result" hidden><div class="panel-head"><h2>Файлы</h2><a class="button secondary" id="folder-link">Открыть папку</a></div><div id="files"></div></div>
+<script>
+const runId = {{ run.id|tojson }};
+async function refresh() {
+  const r = await fetch(`/api/run/${runId}`); const data = await r.json();
+  document.getElementById('log').textContent = data.log || '';
+  const status = document.getElementById('status');
+  status.textContent = data.finished ? (data.returncode === 0 ? 'Готово' : `Завершено с кодом ${data.returncode}`) : 'Выполняется…';
+  if (data.finished) {
+    document.getElementById('result').hidden = false;
+    document.getElementById('folder-link').href = `/files/{{ run.folder_key }}`;
+    document.getElementById('files').innerHTML = data.files.map(f => `<div class="file-row"><a href="/download/{{ run.folder_key }}/${encodeURIComponent(f.name)}">${escapeHtml(f.name)}</a><span class="muted">${escapeHtml(String(f.size))} Б · ${escapeHtml(f.mtime)}</span></div>`).join('') || '<p class="muted">Файлов нет.</p>';
+    clearInterval(timer);
+  }
+}
+function escapeHtml(s){return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}
+refresh(); const timer = setInterval(refresh, 1000);
+</script>
+{% endblock %}

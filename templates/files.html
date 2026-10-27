@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Файлы — Статистика вычислений{% endblock %}
+{% block content %}
+{% set folder_titles = {'word':'Исходные DOCX · ВЦКП','connection':'Статистика Excel · ВЦКП','csm':'Логи и таблицы · ЦСМ','corrections':'Файлы для исправления','report':'Отчёты и группы'} %}
+<a class="back" href="{{ url_for('index') }}">← Обзор</a>
+<div class="page-intro"><div class="eyebrow">ФАЙЛОВОЕ ПРОСТРАНСТВО</div><h1>{{ folder_titles.get(folder_key, folder_key) }}</h1><p>Загружайте исходные файлы и скачивайте готовые результаты. Каждый раздел соответствует своей операции.</p></div>
+<div class="panel">
+  <form method="post" enctype="multipart/form-data" action="{{ url_for('upload', folder_key=folder_key) }}" class="upload">
+    <input type="file" name="file" multiple required>
+    <button class="button button-primary" type="submit">Загрузить файлы <span>↑</span></button>
+  </form>
+</div>
+<div class="panel files-panel">
+  <div class="panel-head"><h2>Файлы в папке <span class="muted">({{ files|length }})</span></h2><span class="muted">Сначала проверьте имя и дату изменения</span></div>
+  {% if files %}{% for f in files %}
+  <div class="file-row">
+    <a href="{{ url_for('download', folder_key=folder_key, filename=f.name) }}">{{ f.name }}</a>
+    <span class="muted">{{ format_size(f.size) }} · {{ f.mtime }}</span>
+    <form method="post" action="{{ url_for('delete_file', folder_key=folder_key, filename=f.name) }}" onsubmit="return confirm('Удалить файл «{{ f.name }}»?')"><button class="link-danger" type="submit">Удалить</button></form>
+  </div>
+  {% endfor %}{% else %}<div class="empty-state"><span>↥</span><strong>Пока нет файлов</strong><p>Загрузите исходный документ или таблицу через форму выше.</p></div>{% endif %}
+</div>
+{% endblock %}
